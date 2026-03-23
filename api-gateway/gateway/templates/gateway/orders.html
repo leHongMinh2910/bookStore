@@ -1,0 +1,31 @@
+{% extends "gateway/base.html" %}
+
+{% block content %}
+<h1 class="h3 mb-3">Orders</h1>
+<div class="row g-3">
+    {% for order in orders %}
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="h5 mb-1">Order #{{ order.id }}</h2>
+                        <p class="text-muted small mb-0">{{ order.ordered_date }} • Status {{ order.status }}</p>
+                    </div>
+                    <strong>${{ order.total }}</strong>
+                </div>
+                <div class="mt-3">
+                    {% for item in order.items %}
+                    <span class="badge text-bg-light me-2">{{ item.book_name }} x{{ item.quantity }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-secondary mb-0">No orders yet.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

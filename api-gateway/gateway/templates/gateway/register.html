@@ -1,0 +1,26 @@
+{% extends "gateway/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-3">Create Account</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">{{ form.first_name.label_tag }}{{ form.first_name }}</div>
+                        <div class="col-md-6">{{ form.last_name.label_tag }}{{ form.last_name }}</div>
+                        <div class="col-12">{{ form.email.label_tag }}{{ form.email }}</div>
+                        <div class="col-md-6">{{ form.phone.label_tag }}{{ form.phone }}</div>
+                        <div class="col-md-6">{{ form.password.label_tag }}{{ form.password }}</div>
+                        <div class="col-12 form-check ms-1">{{ form.is_publisher }} {{ form.is_publisher.label_tag }}</div>
+                        <div class="col-12">{{ form.certificate.label_tag }}{{ form.certificate }}</div>
+                    </div>
+                    <button class="btn btn-warning mt-4 w-100">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

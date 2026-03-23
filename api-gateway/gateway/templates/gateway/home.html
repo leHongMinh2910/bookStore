@@ -1,0 +1,72 @@
+{% extends "gateway/base.html" %}
+
+{% block content %}
+<div class="card hero-card p-4 p-lg-5 mb-4">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <p class="text-uppercase small mb-2 text-warning">API Gateway + JWT Demo</p>
+            <h1 class="display-6 fw-bold">One Bootstrap UI in front of three Django microservices.</h1>
+            <p class="lead mb-0">Browse books, log in with JWT, add items to cart, and place orders through a single gateway.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Catalog</h2>
+            <span class="text-muted">{{ books|length }} books</span>
+        </div>
+        <div class="row g-3">
+            {% for book in books %}
+            <div class="col-md-6">
+                <div class="card book-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="card-title mb-1">{{ book.name }}</h5>
+                                <p class="text-muted mb-0">{{ book.author_name|default:"Unknown author" }}</p>
+                            </div>
+                            <span class="badge text-bg-warning">Rating {{ book.avg_rate|default:"0" }}</span>
+                        </div>
+                        <p class="small text-muted mb-2">{{ book.category_name }} | {{ book.language }} | Stock {{ book.total_number_of_book }}</p>
+                        <p class="card-text">{{ book.description|truncatechars:110 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>${{ book.price }}</strong>
+                            <form method="post" action="{% url 'add-to-cart' book.id %}" class="d-flex gap-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="book_id" value="{{ book.id }}">
+                                <input type="number" name="quantity" value="1" min="1" class="form-control form-control-sm" style="width:72px;">
+                                <button class="btn btn-sm btn-dark">Add</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-secondary mb-0">No books yet. Use the publisher dashboard to add some demo data.</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h3 class="h5">Best Rated</h3>
+                <div class="list-group list-group-flush">
+                    {% for book in best_rated %}
+                    <div class="list-group-item px-0">
+                        <div class="fw-semibold">{{ book.name }}</div>
+                        <div class="small text-muted">{{ book.author_name }} | Rating {{ book.avg_rate|default:"0" }}</div>
+                    </div>
+                    {% empty %}
+                    <div class="small text-muted">Ratings will appear here after reviews are added.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "gateway/base.html" %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-3">Checkout</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">{{ form.country.label_tag }}{{ form.country }}</div>
+                        <div class="col-md-6">{{ form.city.label_tag }}{{ form.city }}</div>
+                        <div class="col-12">{{ form.street.label_tag }}{{ form.street }}</div>
+                        <div class="col-md-6">{{ form.phone.label_tag }}{{ form.phone }}</div>
+                        <div class="col-md-6">{{ form.card_number.label_tag }}{{ form.card_number }}</div>
+                    </div>
+                    <button class="btn btn-success mt-4 w-100">Place Demo Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Order Summary</h2>
+                {% for item in cart.items %}
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>{{ item.book_name }} x{{ item.quantity }}</span>
+                    <span>${{ item.total }}</span>
+                </div>
+                {% endfor %}
+                <div class="d-flex justify-content-between pt-3 fw-bold">
+                    <span>Total</span>
+                    <span>${{ cart.total_price_cart }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
