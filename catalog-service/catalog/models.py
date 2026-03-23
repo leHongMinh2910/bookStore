@@ -23,8 +23,8 @@ class Book(models.Model):
 
     name = models.CharField(max_length=255)
     isbn = models.CharField(max_length=255, unique=True)
-    front_img = models.URLField(blank=True)
-    back_img = models.URLField(blank=True)
+    front_img = models.TextField(blank=True)
+    back_img = models.TextField(blank=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     language = models.CharField(max_length=20, choices=LANGUAGE_CHOICES)

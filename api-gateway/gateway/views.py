@@ -1,3 +1,6 @@
+import base64
+import mimetypes
+
 from django.contrib import messages
 from django.shortcuts import redirect, render
 
@@ -33,6 +36,15 @@ def _refresh_cart_count(request):
         return cart.get("cart")
     request.session["cart_count"] = 0
     return None
+
+
+def _file_to_data_url(uploaded_file):
+    if not uploaded_file:
+        return ""
+    content_type = uploaded_file.content_type or mimetypes.guess_type(uploaded_file.name)[0] or "application/octet-stream"
+    encoded = base64.b64encode(uploaded_file.read()).decode("ascii")
+    uploaded_file.seek(0)
+    return f"data:{content_type};base64,{encoded}"
 
 
 def home(request):
@@ -292,7 +304,7 @@ def create_book(request):
     category_payload, _ = call_service("GET", catalog_url("/api/categories/"), token=_get_token(request))
     author_payload, _ = call_service("GET", identity_url("/api/authors/"), token=_get_token(request))
     publishers_payload, _ = call_service("GET", identity_url("/api/publishers/"), token=_get_token(request))
-    form = BookForm(request.POST or None)
+    form = BookForm(request.POST or None, request.FILES or None)
     form.fields["category"].choices = [(str(item["id"]), item["name"]) for item in (category_payload or [])]
     publisher_authors = author_payload or []
     if user.get("is_publisher") and not user.get("is_admin"):
@@ -310,6 +322,8 @@ def create_book(request):
             data["publisher_id"] = user["id"]
         data["category"] = int(data["category"])
         data["author_id"] = int(data["author_id"])
+        data["front_img"] = _file_to_data_url(request.FILES.get("front_img"))
+        data["back_img"] = _file_to_data_url(request.FILES.get("back_img"))
         _, status_code = call_service("POST", catalog_url("/api/books/"), token=_get_token(request), json=data)
         if status_code in (200, 201):
             messages.success(request, "Book created.")

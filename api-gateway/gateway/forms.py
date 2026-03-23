@@ -39,8 +39,8 @@ class BookForm(forms.Form):
     category = forms.ChoiceField(widget=forms.Select(attrs={"class": "form-select"}))
     author_id = forms.ChoiceField(widget=forms.Select(attrs={"class": "form-select"}))
     publisher_id = forms.ChoiceField(required=False, widget=forms.Select(attrs={"class": "form-select"}))
-    front_img = forms.URLField(required=False, widget=forms.URLInput(attrs={"class": "form-control"}))
-    back_img = forms.URLField(required=False, widget=forms.URLInput(attrs={"class": "form-control"}))
+    front_img = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
+    back_img = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
 
 
 class AddToCartForm(forms.Form):

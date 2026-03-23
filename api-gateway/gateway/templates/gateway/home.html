@@ -21,6 +21,9 @@
             {% for book in books %}
             <div class="col-md-6">
                 <div class="card book-card h-100">
+                    {% if book.front_img %}
+                    <img src="{{ book.front_img }}" class="card-img-top" alt="{{ book.name }}" style="height:260px; object-fit:cover;">
+                    {% endif %}
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
