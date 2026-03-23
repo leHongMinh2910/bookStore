@@ -1,4 +1,5 @@
 import base64
+from datetime import date
 import mimetypes
 
 from django.contrib import messages
@@ -45,6 +46,30 @@ def _file_to_data_url(uploaded_file):
     encoded = base64.b64encode(uploaded_file.read()).decode("ascii")
     uploaded_file.seek(0)
     return f"data:{content_type};base64,{encoded}"
+
+
+def _book_payload_from_form(form, request, user):
+    payload = {
+        "name": form.cleaned_data["name"],
+        "isbn": form.cleaned_data["isbn"],
+        "description": form.cleaned_data["description"],
+        "price": str(form.cleaned_data["price"]),
+        "language": form.cleaned_data["language"],
+        "no_of_page": int(form.cleaned_data["no_of_page"]),
+        "year_of_publication": form.cleaned_data["year_of_publication"].isoformat()
+        if isinstance(form.cleaned_data["year_of_publication"], date)
+        else str(form.cleaned_data["year_of_publication"]),
+        "total_number_of_book": int(form.cleaned_data["total_number_of_book"]),
+        "category": int(form.cleaned_data["category"]),
+        "author_id": int(form.cleaned_data["author_id"]),
+        "front_img": _file_to_data_url(request.FILES.get("front_img")),
+        "back_img": _file_to_data_url(request.FILES.get("back_img")),
+    }
+    if user.get("is_admin"):
+        payload["publisher_id"] = int(form.cleaned_data["publisher_id"])
+    else:
+        payload["publisher_id"] = user["id"]
+    return payload
 
 
 def home(request):
@@ -317,13 +342,7 @@ def create_book(request):
             if not data.get("publisher_id"):
                 messages.error(request, "Admin can chon mot nha phat hanh truoc khi them sach.")
                 return render(request, "gateway/simple_form.html", {"title": "Them sach", "form": form})
-            data["publisher_id"] = int(data["publisher_id"])
-        else:
-            data["publisher_id"] = user["id"]
-        data["category"] = int(data["category"])
-        data["author_id"] = int(data["author_id"])
-        data["front_img"] = _file_to_data_url(request.FILES.get("front_img"))
-        data["back_img"] = _file_to_data_url(request.FILES.get("back_img"))
+        data = _book_payload_from_form(form, request, user)
         _, status_code = call_service("POST", catalog_url("/api/books/"), token=_get_token(request), json=data)
         if status_code in (200, 201):
             messages.success(request, "Book created.")
